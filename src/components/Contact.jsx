@@ -74,7 +74,7 @@ export const Contact = () => {
           <div className="w-full md:w-3/4 bg-white p-5 sm:p-8 md:p-10 rounded-2xl">
             <h3 className="font-bold text-xl">Send Us a Message</h3>
             <p className="text-gray-500 text-sm mt-2">
-              Fill out from and we'll get back to you shortly.
+              Fill out the form and we'll get back to you shortly.
             </p>
 
             <form action="" className="mt-8">
