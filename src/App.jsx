@@ -1,4 +1,5 @@
 import About from "./components/About"
+import { Contact } from "./components/Contact"
 import Hero from "./components/Hero"
 import Membership from "./components/Membership"
 import Navbar from "./components/Navbar"
@@ -12,6 +13,7 @@ const App = () => {
       <About />
       <Trainers />
       <Membership />
+      <Contact />
     </div>
   )
 }
