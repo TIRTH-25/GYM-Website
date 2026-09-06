@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   RiCheckLine,
   RiStarFill,
@@ -48,72 +48,70 @@ const Membership = () => {
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
 
-  // Automatic sliding
+  // =========================
+  // Automatic Sliding
+  // =========================
   useEffect(() => {
-    if (isPaused) return;
-
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % plans.length);
     }, 3500);
 
     return () => clearInterval(interval);
-  }, [isPaused, plans.length]);
+  }, []);
 
-  // Previous plan
+  // =========================
+  // Previous Plan
+  // =========================
   const previousPlan = () => {
     setCurrentIndex((prev) =>
       prev === 0 ? plans.length - 1 : prev - 1
     );
   };
 
-  // Next plan
+  // =========================
+  // Next Plan
+  // =========================
   const nextPlan = () => {
     setCurrentIndex((prev) => (prev + 1) % plans.length);
   };
 
-  // Swipe
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
+  // =========================
+  // Swipe Handling
+  // =========================
+  const touchStartX = useRef(null);
 
   const handleTouchStart = (e) => {
-    setTouchStart(e.targetTouches[0].clientX);
-    setTouchEnd(null);
-    setIsPaused(true);
+    touchStartX.current = e.touches[0].clientX;
   };
 
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
 
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) {
-      setIsPaused(false);
-      return;
-    }
-
-    const distance = touchStart - touchEnd;
+    const touchEndX = e.changedTouches[0].clientX;
+    const distance = touchStartX.current - touchEndX;
     const minSwipeDistance = 50;
 
+    // Swipe LEFT → Next
     if (distance > minSwipeDistance) {
       nextPlan();
     }
 
-    if (distance < -minSwipeDistance) {
+    // Swipe RIGHT → Previous
+    else if (distance < -minSwipeDistance) {
       previousPlan();
     }
 
-    setTouchStart(null);
-    setTouchEnd(null);
-    setIsPaused(false);
+    touchStartX.current = null;
   };
 
-  // Reusable card
+  // =========================
+  // Membership Card
+  // =========================
   const MembershipCard = ({ plan }) => {
     return (
       <div
-        className={`p-6 sm:p-8 bg-white min-h-[500px] relative flex rounded-2xl flex-col border ${
+        className={`w-full bg-white min-h-[500px] relative flex flex-col rounded-2xl p-6 sm:p-8 border ${
           plan.popular
             ? "border-2 border-red-500"
             : "border-gray-100"
@@ -189,7 +187,9 @@ const Membership = () => {
       id="membership"
       className="bg-[rgba(241,238,238,0.74)] px-5 sm:px-6 py-16 md:py-20"
     >
-      {/* Heading */}
+      {/* =========================
+          Heading
+      ========================== */}
       <div className="text-center max-w-3xl mx-auto">
         <h2 className="text-3xl sm:text-4xl font-bold">
           Choose Your{" "}
@@ -205,7 +205,9 @@ const Membership = () => {
         </p>
       </div>
 
-      {/* ================= DESKTOP ================= */}
+      {/* =========================
+          DESKTOP
+      ========================== */}
       <div className="hidden md:grid max-w-6xl mx-auto grid-cols-3 mt-15 gap-8">
         {plans.map((plan) => (
           <MembershipCard
@@ -215,64 +217,73 @@ const Membership = () => {
         ))}
       </div>
 
-      {/* ================= MOBILE ================= */}
+      {/* =========================
+          MOBILE SLIDER
+      ========================== */}
       <div className="md:hidden mt-12">
 
+        {/* Slider */}
         <div
-          className="relative w-full max-w-sm mx-auto"
+          className="overflow-hidden w-full pt-3"
+          style={{ touchAction: "pan-y" }}
           onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{
+              transform: `translateX(-${currentIndex * 100}%)`,
+            }}
+          >
+            {plans.map((plan) => (
+              <div
+                key={plan.name}
+                className="w-full min-w-full flex-shrink-0 px-1"
+              >
+                <MembershipCard plan={plan} />
+              </div>
+            ))}
+          </div>
+        </div>
 
-          {/* Card */}
-          <MembershipCard
-            plan={plans[currentIndex]}
-          />
+        {/* Slider Controls */}
+        <div className="flex items-center justify-center gap-5 mt-8">
 
           {/* Previous */}
           <button
             onClick={previousPlan}
-            className="absolute left-2 top-1/2 -translate-y-1/2 h-9 w-9 bg-black text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition"
+            className="h-9 w-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:text-white transition active:scale-95"
             aria-label="Previous membership plan"
           >
             <RiArrowLeftLine size={18} />
           </button>
 
+          {/* Dots */}
+          <div className="flex gap-2">
+            {plans.map((plan, index) => (
+              <button
+                key={plan.name}
+                onClick={() => setCurrentIndex(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  currentIndex === index
+                    ? "w-6 bg-red-500"
+                    : "w-2 bg-gray-300"
+                }`}
+                aria-label={`Go to ${plan.name} plan`}
+              />
+            ))}
+          </div>
+
           {/* Next */}
           <button
             onClick={nextPlan}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 bg-black text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition"
+            className="h-9 w-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:text-white transition active:scale-95"
             aria-label="Next membership plan"
           >
             <RiArrowRightLine size={18} />
           </button>
 
         </div>
-
-        {/* Dots */}
-        <div className="flex justify-center items-center gap-2 mt-6">
-
-          {plans.map((plan, index) => (
-            <button
-              key={plan.name}
-              onClick={() => setCurrentIndex(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                currentIndex === index
-                  ? "w-6 bg-red-500"
-                  : "w-2 bg-gray-300"
-              }`}
-              aria-label={`Go to ${plan.name} plan`}
-            />
-          ))}
-
-        </div>
-
-        {/* Swipe hint */}
-        <p className="text-center text-xs text-gray-400 mt-4">
-          Swipe to explore plans
-        </p>
-
       </div>
 
       {/* Bottom Note */}

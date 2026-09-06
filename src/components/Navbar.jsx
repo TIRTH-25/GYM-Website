@@ -48,11 +48,12 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Join Button */}
-        <button
+        <a
+          href="#membership"
           className="hidden md:block bg-red-500 text-white text-sm font-bold px-5 py-2 rounded-full hover:bg-red-600 active:scale-95 transition-all duration-200"
         >
           Join Now
-        </button>
+        </a>
 
         {/* Mobile Menu Button */}
         <button

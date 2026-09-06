@@ -49,10 +49,10 @@ const Hero = () => {
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 w-full sm:w-auto">
 
-        <button className="bg-red-500 rounded-md px-7 py-3 flex items-center justify-center text-white gap-1 hover:bg-red-600 transition-all duration-200 active:scale-95">
+        <a href="#membership" className="bg-red-500 rounded-md px-7 py-3 flex items-center justify-center text-white gap-1 hover:bg-red-600 transition-all duration-200 active:scale-95">
           Join Now
           <RiArrowRightLine size={18} />
-        </button>
+        </a>
 
         <button className="rounded-md px-7 py-3 text-white border border-white hover:bg-white hover:text-black transition-all duration-200 active:scale-95">
           Learn More

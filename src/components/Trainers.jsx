@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   RiUser3Fill,
   RiArrowLeftLine,
@@ -20,8 +20,7 @@ const Trainers = () => {
       name: "Sarah Johnson",
       specialty: "YOGA & FLEXIBILITY",
       experience: "6 YEARS EXPERIENCE",
-      description:
-        "Expert in yoga, pilates, and holistic wellness approaches.",
+      description: "Expert in yoga, pilates, and holistic wellness approaches.",
     },
     {
       pic: RiUser3Fill,
@@ -42,82 +41,72 @@ const Trainers = () => {
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
 
-  // Automatic sliding
+  // =========================
+  // Automatic Sliding
+  // =========================
   useEffect(() => {
-    if (isPaused) return;
-
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % trainers.length);
     }, 3500);
 
     return () => clearInterval(interval);
-  }, [isPaused, trainers.length]);
+  }, [trainers.length]);
 
-  // Previous card
+  // =========================
+  // Previous Trainer
+  // =========================
   const previousTrainer = () => {
-    setCurrentIndex((prev) =>
-      prev === 0 ? trainers.length - 1 : prev - 1
-    );
+    setCurrentIndex((prev) => (prev === 0 ? trainers.length - 1 : prev - 1));
   };
 
-  // Next card
+  // =========================
+  // Next Trainer
+  // =========================
   const nextTrainer = () => {
     setCurrentIndex((prev) => (prev + 1) % trainers.length);
   };
 
-  // Swipe handling
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
+  // =========================
+  // Swipe Handling
+  // =========================
+  const touchStartX = useRef(null);
 
   const handleTouchStart = (e) => {
-    setTouchStart(e.targetTouches[0].clientX);
-    setTouchEnd(null);
-    setIsPaused(true);
+    touchStartX.current = e.touches[0].clientX;
   };
 
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
 
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) {
-      setIsPaused(false);
-      return;
-    }
-
-    const distance = touchStart - touchEnd;
+    const touchEndX = e.changedTouches[0].clientX;
+    const distance = touchStartX.current - touchEndX;
     const minSwipeDistance = 50;
 
     if (distance > minSwipeDistance) {
       nextTrainer();
-    }
-
-    if (distance < -minSwipeDistance) {
+    } else if (distance < -minSwipeDistance) {
       previousTrainer();
     }
 
-    setTouchStart(null);
-    setTouchEnd(null);
-    setIsPaused(false);
+    touchStartX.current = null;
   };
 
+  // =========================
+  // Trainer Card
+  // =========================
   const TrainerCard = ({ trainer }) => {
     const Pic = trainer.pic;
 
     return (
       <div className="w-full bg-white text-center rounded-2xl border border-gray-100 px-6 py-8">
-
         {/* Icon */}
         <div className="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center mx-auto">
           <Pic size={30} className="text-red-500" />
         </div>
 
         {/* Name */}
-        <h4 className="mt-6 font-bold text-[18px]">
-          {trainer.name}
-        </h4>
+        <h4 className="mt-6 font-bold text-[18px]">{trainer.name}</h4>
 
         {/* Specialty */}
         <h5 className="max-w-[150px] mx-auto text-[12px] text-red-600 font-bold mt-1">
@@ -138,19 +127,13 @@ const Trainers = () => {
   };
 
   return (
-    <section
-      id="trainers"
-      className="bg-[#F8F9FA] px-6 py-20"
-    >
-
-      {/* Heading */}
+    <section id="trainers" className="bg-[#F8F9FA] px-6 py-20">
+      {/* =========================
+          Heading
+      ========================== */}
       <div className="flex flex-col items-center text-center gap-5">
-
         <h2 className="text-3xl md:text-4xl font-bold">
-          Meet Our{" "}
-          <span className="text-red-500">
-            Expert Trainers
-          </span>
+          Meet Our <span className="text-red-500">Expert Trainers</span>
         </h2>
 
         <p className="max-w-4xl mx-auto text-gray-500 text-[16px] md:text-[17px] leading-7">
@@ -158,81 +141,80 @@ const Trainers = () => {
           experience in helping people achieve their fitness goals. Get
           personalized guidance from the best in the industry.
         </p>
-
       </div>
 
-      {/* Desktop Cards */}
+      {/* =========================
+          Desktop Cards
+      ========================== */}
       <div className="hidden md:grid max-w-6xl mx-auto grid-cols-2 lg:grid-cols-4 gap-5 mt-20">
-
         {trainers.map((trainer) => (
-          <TrainerCard
-            key={trainer.name}
-            trainer={trainer}
-          />
+          <TrainerCard key={trainer.name} trainer={trainer} />
         ))}
-
       </div>
 
-      {/* Mobile Carousel */}
+      {/* ================= MOBILE SLIDER ================= */}
       <div className="md:hidden mt-12">
-
+        {/* Slider Container */}
         <div
-          className="relative w-full max-w-sm mx-auto"
+          className="overflow-hidden w-full"
+          style={{ touchAction: "pan-y" }}
           onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{
+              transform: `translateX(-${currentIndex * 100}%)`,
+            }}
+          >
+            {trainers.map((trainer) => (
+              <div
+                key={trainer.name}
+                className="w-full min-w-full flex-shrink-0 px-1"
+              >
+                <TrainerCard trainer={trainer} />
+              </div>
+            ))}
+          </div>
+        </div>
 
-          {/* Card */}
-          <TrainerCard
-            trainer={trainers[currentIndex]}
-          />
-
-          {/* Previous Button */}
+        {/* Slider Controls */}
+        <div className="flex items-center justify-center gap-5 mt-8">
+          {/* Previous */}
           <button
             onClick={previousTrainer}
-            className="absolute left-2 top-1/2 -translate-y-1/2 h-9 w-9 bg-black text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition"
-            aria-label="Previous trainer"
+            className="h-9 w-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:text-white transition"
           >
             <RiArrowLeftLine size={18} />
           </button>
 
-          {/* Next Button */}
+          {/* Dots */}
+          <div className="flex gap-2">
+            {trainers.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  currentIndex === index ? "w-6 bg-red-500" : "w-2 bg-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Next */}
           <button
             onClick={nextTrainer}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 bg-black text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition"
-            aria-label="Next trainer"
+            className="h-9 w-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:text-white transition"
           >
             <RiArrowRightLine size={18} />
           </button>
-
         </div>
 
-        {/* Dots */}
-        <div className="flex justify-center items-center gap-2 mt-6">
-
-          {trainers.map((trainer, index) => (
-            <button
-              key={trainer.name}
-              onClick={() => setCurrentIndex(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                currentIndex === index
-                  ? "w-6 bg-red-500"
-                  : "w-2 bg-gray-300"
-              }`}
-              aria-label={`Go to ${trainer.name}`}
-            />
-          ))}
-
-        </div>
-
-        {/* Swipe hint */}
+        {/* Swipe Hint */}
         <p className="text-center text-xs text-gray-400 mt-4">
           Swipe to explore trainers
         </p>
-
       </div>
-
     </section>
   );
 };
