@@ -274,7 +274,7 @@ const Contact = () => {
             </div>
 
             {/* ================= MAP ================= */}
-            <div className="bg-white rounded-2xl overflow-hidden">
+            <div id="location" className="bg-white rounded-2xl overflow-hidden">
               <div className="p-5 sm:p-8 pb-5">
                 <h3 className="font-bold text-xl">
                   Find <span className="text-red-500">Us</span>
