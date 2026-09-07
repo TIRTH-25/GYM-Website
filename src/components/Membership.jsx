@@ -6,7 +6,7 @@ import {
   RiArrowRightLine,
 } from "@remixicon/react";
 
-const Membership = () => {
+const Membership = ({ setSelectedPlan }) => {
   const plans = [
     {
       name: "Basic",
@@ -64,9 +64,7 @@ const Membership = () => {
   // Previous Plan
   // =========================
   const previousPlan = () => {
-    setCurrentIndex((prev) =>
-      prev === 0 ? plans.length - 1 : prev - 1
-    );
+    setCurrentIndex((prev) => (prev === 0 ? plans.length - 1 : prev - 1));
   };
 
   // =========================
@@ -105,6 +103,11 @@ const Membership = () => {
     touchStartX.current = null;
   };
 
+  const handlePlanSelect = (planName) => {
+  setSelectedPlan(planName);
+  window.location.href = "#contact";
+};
+
   // =========================
   // Membership Card
   // =========================
@@ -112,9 +115,7 @@ const Membership = () => {
     return (
       <div
         className={`w-full bg-white min-h-[500px] relative flex flex-col rounded-2xl p-6 sm:p-8 border ${
-          plan.popular
-            ? "border-2 border-red-500"
-            : "border-gray-100"
+          plan.popular ? "border-2 border-red-500" : "border-gray-100"
         }`}
       >
         {/* Popular Badge */}
@@ -126,23 +127,15 @@ const Membership = () => {
         )}
 
         {/* Plan Name */}
-        <h3 className="font-bold text-2xl text-center">
-          {plan.name}
-        </h3>
+        <h3 className="font-bold text-2xl text-center">{plan.name}</h3>
 
-        <p className="text-gray-500 text-sm text-center">
-          {plan.subtitle}
-        </p>
+        <p className="text-gray-500 text-sm text-center">{plan.subtitle}</p>
 
         {/* Price */}
         <div className="flex justify-center items-end gap-1 mt-5">
-          <span className="text-xl text-red-500 font-bold">
-            ₹
-          </span>
+          <span className="text-xl text-red-500 font-bold">₹</span>
 
-          <span className="text-4xl sm:text-5xl font-bold">
-            {plan.price}
-          </span>
+          <span className="text-4xl sm:text-5xl font-bold">{plan.price}</span>
 
           <span className="text-gray-500 text-sm sm:text-base">
             {plan.duration}
@@ -161,23 +154,22 @@ const Membership = () => {
                 className="bg-red-500 rounded-full text-white h-4 w-4 shrink-0 mt-0.5"
               />
 
-              <p className="text-gray-600 text-sm">
-                {feature}
-              </p>
+              <p className="text-gray-600 text-sm">{feature}</p>
             </div>
           ))}
         </div>
 
         {/* Button */}
         <button
-          className={`w-full py-3 rounded-lg font-bold mt-6 active:scale-95 transition-all duration-200 ${
-            plan.popular
-              ? "bg-red-500 text-white hover:bg-red-600"
-              : "bg-black text-white hover:bg-gray-800"
-          }`}
-        >
-          Choose {plan.name}
-        </button>
+  onClick={() => handlePlanSelect(plan.name)}
+  className={`w-full py-3 rounded-lg font-bold mt-6 active:scale-95 transition-all duration-200 ${
+    plan.popular
+      ? "bg-red-500 text-white hover:bg-red-600"
+      : "bg-black text-white hover:bg-gray-800"
+  }`}
+>
+  Choose {plan.name}
+</button>
       </div>
     );
   };
@@ -192,16 +184,12 @@ const Membership = () => {
       ========================== */}
       <div className="text-center max-w-3xl mx-auto">
         <h2 className="text-3xl sm:text-4xl font-bold">
-          Choose Your{" "}
-          <span className="text-red-500">
-            Membership Plan
-          </span>
+          Choose Your <span className="text-red-500">Membership Plan</span>
         </h2>
 
         <p className="mt-5 sm:mt-6 text-gray-500 text-sm sm:text-[17px] leading-6 sm:leading-7">
-          Select the perfect plan that fits your fitness journey.
-          All plans include access to our world-class facilities
-          and supportive community.
+          Select the perfect plan that fits your fitness journey. All plans
+          include access to our world-class facilities and supportive community.
         </p>
       </div>
 
@@ -210,10 +198,7 @@ const Membership = () => {
       ========================== */}
       <div className="hidden md:grid max-w-6xl mx-auto grid-cols-3 mt-15 gap-8">
         {plans.map((plan) => (
-          <MembershipCard
-            key={plan.name}
-            plan={plan}
-          />
+          <MembershipCard key={plan.name} plan={plan} />
         ))}
       </div>
 
@@ -221,7 +206,6 @@ const Membership = () => {
           MOBILE SLIDER
       ========================== */}
       <div className="md:hidden mt-12">
-
         {/* Slider */}
         <div
           className="overflow-hidden w-full pt-3"
@@ -248,7 +232,6 @@ const Membership = () => {
 
         {/* Slider Controls */}
         <div className="flex items-center justify-center gap-5 mt-8">
-
           {/* Previous */}
           <button
             onClick={previousPlan}
@@ -265,9 +248,7 @@ const Membership = () => {
                 key={plan.name}
                 onClick={() => setCurrentIndex(index)}
                 className={`h-2 rounded-full transition-all duration-300 ${
-                  currentIndex === index
-                    ? "w-6 bg-red-500"
-                    : "w-2 bg-gray-300"
+                  currentIndex === index ? "w-6 bg-red-500" : "w-2 bg-gray-300"
                 }`}
                 aria-label={`Go to ${plan.name} plan`}
               />
@@ -282,17 +263,14 @@ const Membership = () => {
           >
             <RiArrowRightLine size={18} />
           </button>
-
         </div>
       </div>
 
       {/* Bottom Note */}
       <p className="text-center mt-8 md:mt-10 italic text-gray-500 text-xs sm:text-sm">
         All Plans Include a{" "}
-        <span className="text-red-500 font-bold">
-          7-day free trial
-        </span>{" "}
-        and can be cancelled anytime.
+        <span className="text-red-500 font-bold">7-day free trial</span> and can
+        be cancelled anytime.
       </p>
     </section>
   );

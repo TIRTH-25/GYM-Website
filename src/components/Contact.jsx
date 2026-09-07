@@ -1,72 +1,84 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  RiSendInsFill,
-  RiArrowLeftLine,
-  RiArrowRightLine,
-  RiStarFill,
-} from "@remixicon/react";
+import { useState } from "react";
+import Review from "./Review";
 
-const Contact = () => {
-  const reviews = [
-    {
-      name: "Rahul Patel",
-      rating: 5,
-      review:
-        "Amazing gym with great trainers and a very positive environment.",
-    },
-    {
-      name: "Priya Shah",
-      rating: 5,
-      review: "The trainers are supportive and the equipment is really good.",
-    },
-    {
-      name: "Amit Desai",
-      rating: 5,
-      review: "Best place to stay consistent with fitness. Highly recommended!",
-    },
-  ];
+import { RiSendInsFill } from "@remixicon/react";
 
-  const [currentReview, setCurrentReview] = useState(0);
-  const touchStartX = useRef(null);
+const Contact = ({ selectedPlan }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
 
-  const nextReview = () => {
-    setCurrentReview((prev) => (prev + 1) % reviews.length);
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const previousReview = () => {
-    setCurrentReview((prev) => (prev - 1 + reviews.length) % reviews.length);
-  };
+  // Handle form submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextReview();
-    }, 3500);
+    setLoading(true);
+    setSubmitted(false);
 
-    return () => clearInterval(interval);
-  }, []);
+    try {
+      const response = await fetch("http://localhost:5001/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          selectedPlan: selectedPlan || "",
+        }),
+      });
 
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
+      const data = await response.json();
 
-  const handleTouchEnd = (e) => {
-    if (touchStartX.current === null) return;
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
 
-    const touchEndX = e.changedTouches[0].clientX;
-    const distance = touchStartX.current - touchEndX;
-    const minSwipeDistance = 50;
+      console.log("Lead created:", data);
 
-    if (distance > minSwipeDistance) {
-      nextReview();
-    } else if (distance < -minSwipeDistance) {
-      previousReview();
+      setSubmitted(true);
+
+      // Clear form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+      });
+
+      // Hide success message after 4 seconds
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 4000);
+    } catch (error) {
+      console.error("Submit lead error:", error);
+
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    touchStartX.current = null;
   };
 
   return (
-    <section id="contact" className="bg-[#F8F9FA] px-5 sm:px-6 py-16 md:py-20">
+    <section
+      id="contact"
+      className="bg-[#F8F9FA] px-5 sm:px-6 py-16 md:py-20"
+    >
       <div className="max-w-7xl mx-auto">
         {/* Heading */}
         <div className="text-center">
@@ -82,7 +94,7 @@ const Contact = () => {
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12 md:mt-15">
-          {/* ================= CONTACT FORM ================= */}
+          {/* Contact Form */}
           <div className="bg-white p-5 sm:p-8 md:p-10 rounded-2xl">
             <h3 className="font-bold text-xl">Send Us a Message</h3>
 
@@ -90,35 +102,71 @@ const Contact = () => {
               Fill out the form and we'll get back to you shortly.
             </p>
 
-            <form className="mt-8">
-              {/* Full Name */}
+            {/* Selected Plan */}
+            {selectedPlan && (
+              <div className="mt-5 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
+                <p className="text-sm text-gray-600">
+                  Interested in:
+                  <span className="font-bold text-red-500 ml-1">
+                    {selectedPlan} Plan
+                  </span>
+                </p>
+              </div>
+            )}
+
+            {/* Success Message */}
+            {submitted && (
+              <div className="mt-5 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                <p className="text-sm text-green-700 font-medium">
+                  ✓ Thank you! We'll contact you soon.
+                </p>
+              </div>
+            )}
+
+            {/* Form */}
+            <form className="mt-8" onSubmit={handleSubmit}>
+              {/* Name */}
               <div className="w-full flex flex-col gap-1">
-                <label>Full Name *</label>
+                <label htmlFor="name">Full Name *</label>
 
                 <input
+                  id="name"
+                  name="name"
                   type="text"
+                  value={formData.name}
+                  onChange={handleChange}
                   placeholder="Enter your full name"
+                  required
                   className="border border-gray-200 px-3 py-2.5 rounded-lg outline-none focus:border-red-500 transition"
                 />
               </div>
 
               {/* Email */}
               <div className="w-full flex flex-col mt-7 gap-1">
-                <label>Email Address *</label>
+                <label htmlFor="email">Email Address *</label>
 
                 <input
+                  id="email"
+                  name="email"
                   type="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="Enter your email address"
+                  required
                   className="border border-gray-200 px-3 py-2.5 rounded-lg outline-none focus:border-red-500 transition"
                 />
               </div>
 
               {/* Phone */}
               <div className="w-full flex flex-col mt-7 gap-1">
-                <label>Phone Number</label>
+                <label htmlFor="phone">Phone Number</label>
 
                 <input
+                  id="phone"
+                  name="phone"
                   type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
                   placeholder="+91"
                   className="border border-gray-200 px-3 py-2.5 rounded-lg outline-none focus:border-red-500 transition"
                 />
@@ -126,11 +174,16 @@ const Contact = () => {
 
               {/* Message */}
               <div className="w-full flex flex-col mt-7 gap-1">
-                <label>Message *</label>
+                <label htmlFor="message">Message *</label>
 
                 <textarea
-                  rows="5"
+                  id="message"
+                  name="message"
+                  rows="6"
+                  value={formData.message}
+                  onChange={handleChange}
                   placeholder="Tell us about your fitness goals..."
+                  required
                   className="border border-gray-200 px-3 py-2.5 rounded-lg outline-none focus:border-red-500 transition resize-none"
                 />
               </div>
@@ -138,143 +191,22 @@ const Contact = () => {
               {/* Submit */}
               <button
                 type="submit"
-                className="
-          flex
-          items-center
-          justify-center
-          w-full
-          mt-7
-          bg-red-500
-          py-3
-          rounded-lg
-          text-white
-          font-bold
-          gap-1
-          hover:bg-red-600
-          active:scale-[0.98]
-          transition-all
-          duration-200
-        "
+                disabled={loading}
+                className="flex items-center justify-center w-full mt-7 bg-red-500 py-3 rounded-lg text-white font-bold gap-1 hover:bg-red-600 active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Send Message
-                <RiSendInsFill size={16} />
+                {loading ? "Sending..." : "Send Message"}
+
+                {!loading && <RiSendInsFill size={16} />}
               </button>
             </form>
           </div>
 
-          {/* ================= RIGHT SIDE ================= */}
+          {/* Right Side */}
           <div className="flex flex-col gap-8">
-            {/* ================= RATING ================= */}
-            <div className="bg-white rounded-2xl p-5 sm:p-8">
-              <h3 className="font-bold text-xl">
-                What Our <span className="text-red-500">Members Say</span>
-              </h3>
+            <Review />
 
-              <p className="text-gray-500 text-sm mt-2">
-                Real experiences from our fitness community.
-              </p>
-
-              {/* Review Carousel */}
-              <div
-                className="overflow-hidden mt-8 w-full"
-                style={{ touchAction: "pan-y" }}
-                onTouchStart={handleTouchStart}
-                onTouchEnd={handleTouchEnd}
-              >
-                <div
-                  className="flex transition-transform duration-500 ease-in-out"
-                  style={{
-                    transform: `translateX(-${currentReview * 100}%)`,
-                  }}
-                >
-                  {reviews.map((review) => (
-                    <div
-                      key={review.name}
-                      className="w-full min-w-full flex-shrink-0"
-                    >
-                      {/* Stars */}
-                      <div className="flex gap-1">
-                        {[...Array(review.rating)].map((_, index) => (
-                          <RiStarFill
-                            key={index}
-                            size={18}
-                            className="text-red-500"
-                          />
-                        ))}
-                      </div>
-
-                      {/* Review */}
-                      <p className="text-gray-600 text-sm sm:text-base leading-6 mt-5">
-                        "{review.review}"
-                      </p>
-
-                      {/* Member */}
-                      <p className="font-bold mt-5">{review.name}</p>
-
-                      <p className="text-gray-400 text-sm mt-1">
-                        Soul Fitness Member
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Arrows + Dots */}
-              <div className="flex items-center justify-center gap-5 mt-8">
-                <button
-                  onClick={previousReview}
-                  className="
-            border
-            border-gray-200
-            p-2
-            rounded-full
-            hover:bg-red-500
-            hover:text-white
-            hover:border-red-500
-            active:scale-95
-            transition-all
-            duration-200
-          "
-                >
-                  <RiArrowLeftLine size={20} />
-                </button>
-
-                <div className="flex gap-2">
-                  {reviews.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentReview(index)}
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        currentReview === index
-                          ? "w-6 bg-red-500"
-                          : "w-2 bg-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={nextReview}
-                  className="
-            border
-            border-gray-200
-            p-2
-            rounded-full
-            hover:bg-red-500
-            hover:text-white
-            hover:border-red-500
-            active:scale-95
-            transition-all
-            duration-200
-          "
-                >
-                  <RiArrowRightLine size={20} />
-                </button>
-              </div>
-            </div>
-
-            {/* ================= MAP ================= */}
-            <div id="location" className="bg-white rounded-2xl overflow-hidden">
+            {/* Location */}
+            <div className="bg-white rounded-2xl overflow-hidden">
               <div className="p-5 sm:p-8 pb-5">
                 <h3 className="font-bold text-xl">
                   Find <span className="text-red-500">Us</span>

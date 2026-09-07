@@ -54,9 +54,9 @@ const Hero = () => {
           <RiArrowRightLine size={18} />
         </a>
 
-        <button className="rounded-md px-7 py-3 text-white border border-white hover:bg-white hover:text-black transition-all duration-200 active:scale-95">
+        <a href="#about" className="rounded-md px-7 py-3 text-white border border-white hover:bg-white hover:text-black transition-all duration-200 active:scale-95">
           Learn More
-        </button>
+        </a>
 
       </div>
 

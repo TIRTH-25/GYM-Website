@@ -1,0 +1,15 @@
+### Get all Soul Fitness leads
+
+GET http://localhost:5001/api/leads
+
+### Test Soul Fitness Lead API
+POST http://localhost:5001/api/leads
+Content-Type: application/json
+
+{
+  "name": "Tirth Patel",
+  "email": "tirth@example.com",
+  "phone": "9876543210",
+  "message": "I want to join Soul Fitness",
+  "selectedPlan": "Standard"
+}
