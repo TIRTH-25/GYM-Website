@@ -32,7 +32,7 @@ const Contact = ({ selectedPlan }) => {
     setSubmitted(false);
 
     try {
-      const response = await fetch("http://localhost:5001/api/leads", {
+      const response = await fetch("https://soul-fitness-api.onrender.com/api/leads", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
