@@ -8,7 +8,7 @@ import Hero from "./components/Hero";
 import Membership from "./components/Membership";
 import Navbar from "./components/Navbar";
 import Trainers from "./components/Trainers";
-import Admin from "./components/Admin";
+import Admin from "./admin/Admin";
 
 const Home = () => {
   const [selectedPlan, setSelectedPlan] = useState("");
