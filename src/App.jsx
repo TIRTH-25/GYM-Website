@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import About from "./components/About";
 import Contact from "./components/Contact";
@@ -7,8 +8,9 @@ import Hero from "./components/Hero";
 import Membership from "./components/Membership";
 import Navbar from "./components/Navbar";
 import Trainers from "./components/Trainers";
+import Admin from "./components/Admin";
 
-const App = () => {
+const Home = () => {
   const [selectedPlan, setSelectedPlan] = useState("");
 
   return (
@@ -27,6 +29,17 @@ const App = () => {
 
       <Footer />
     </div>
+  );
+};
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/admin" element={<Admin />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 

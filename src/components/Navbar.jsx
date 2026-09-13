@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RiMenuLine, RiCloseLine } from "@remixicon/react";
+import { RiMenuLine, RiCloseLine, RiUserLine } from "@remixicon/react";
 import soulFitnessLogo from "../assets/soul-fitness-logo.jpg";
 
 const Navbar = () => {
@@ -15,10 +15,8 @@ const Navbar = () => {
 
   return (
     <nav className="bg-black w-full min-h-16 px-5 md:px-6 text-white relative">
-      
       {/* Main Navbar */}
       <div className="h-16 flex items-center justify-between">
-
         {/* Logo */}
         <div className="flex gap-3 items-center">
           <img
@@ -27,10 +25,7 @@ const Navbar = () => {
             className="h-11 w-11 sm:h-12 sm:w-12 object-contain bg-white rounded-full"
           />
 
-          <a
-            href="#"
-            className="text-lg sm:text-xl font-bold"
-          >
+          <a href="#" className="text-lg sm:text-xl font-bold">
             Soul Fitness
           </a>
         </div>
@@ -48,12 +43,13 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop Join Button */}
+        {/* Desktop Admin Button */}
         <a
-          href="#membership"
-          className="hidden md:block bg-red-500 text-white text-sm font-bold px-5 py-2 rounded-full hover:bg-red-600 active:scale-95 transition-all duration-200"
+          href="/admin"
+          className="hidden md:flex items-center gap-2 border border-gray-600 text-gray-300 text-sm font-semibold px-4 py-2 rounded-full hover:border-red-500 hover:text-red-500 active:scale-95 transition-all duration-200"
         >
-          Join Now
+          <RiUserLine size={18} />
+          Admin
         </a>
 
         {/* Mobile Menu Button */}
@@ -63,20 +59,14 @@ const Navbar = () => {
           className="md:hidden p-1 hover:text-red-500 transition-colors duration-200"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
         >
-          {menuOpen ? (
-            <RiCloseLine size={28} />
-          ) : (
-            <RiMenuLine size={28} />
-          )}
+          {menuOpen ? <RiCloseLine size={28} /> : <RiMenuLine size={28} />}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden border-t border-gray-800 py-4">
-          
-          <div className="flex flex-col gap-2 text-sm">
-
+          <div className="flex flex-col gap-2 text-sm items-center">
             {/* Mobile Links */}
             {navLinks.map((link) => (
               <a
@@ -89,15 +79,15 @@ const Navbar = () => {
               </a>
             ))}
 
-            {/* Mobile Join Button */}
-            <button
-              type="button"
+            {/* Mobile Admin Button */}
+            <a
+              href="/admin"
               onClick={() => setMenuOpen(false)}
-              className="w-full bg-red-500 text-white text-sm font-bold px-5 py-2.5 rounded-full mt-2 hover:bg-red-600 active:scale-95 transition-all duration-200"
+              className="w-full flex items-center justify-center gap-2 border border-gray-600 text-gray-300 text-sm font-semibold px-4 py-2 rounded-full hover:border-red-500 hover:text-red-500 active:scale-95 transition-all duration-200"
             >
-              Join Now
-            </button>
-
+              <RiUserLine size={18} />
+              Admin
+            </a>
           </div>
         </div>
       )}

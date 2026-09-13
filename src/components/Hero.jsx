@@ -54,7 +54,7 @@ const Hero = () => {
           <RiArrowRightLine size={18} />
         </a>
 
-        <a href="#about" className="rounded-md px-7 py-3 text-white border border-white hover:bg-white hover:text-black transition-all duration-200 active:scale-95">
+        <a href="#about" className="flex items-center justify-center rounded-md px-7 py-3 text-white border border-white hover:bg-white hover:text-black transition-all duration-200 active:scale-95">
           Learn More
         </a>
 
