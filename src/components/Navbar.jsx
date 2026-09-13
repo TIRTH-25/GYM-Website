@@ -45,7 +45,7 @@ const Navbar = () => {
 
         {/* Desktop Admin Button */}
         <a
-          href="/admin"
+          href="/GYM-Website/admin"
           className="hidden md:flex items-center gap-2 border border-gray-600 text-gray-300 text-sm font-semibold px-4 py-2 rounded-full hover:border-red-500 hover:text-red-500 active:scale-95 transition-all duration-200"
         >
           <RiUserLine size={18} />
@@ -81,7 +81,7 @@ const Navbar = () => {
 
             {/* Mobile Admin Button */}
             <a
-              href="/admin"
+              href="/GYM-Website/admin"
               onClick={() => setMenuOpen(false)}
               className="w-full flex items-center justify-center gap-2 border border-gray-600 text-gray-300 text-sm font-semibold px-4 py-2 rounded-full hover:border-red-500 hover:text-red-500 active:scale-95 transition-all duration-200"
             >
